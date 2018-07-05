@@ -22,9 +22,11 @@ services:
     volumes:
       - ../src:/var/www
 
-  apache:
-    build:
-      context: ./webserver/apache
+  # apache:
+  #   build:
+  #     context: ./webserver/apache
+  #   volumes:
+  #     - ../src:/var/www
 
   nginx:
     build:

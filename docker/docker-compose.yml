@@ -1,0 +1,91 @@
+version: '3'
+
+# # Define Your Local Drives Volumes
+# # Uncomment this section for activate this
+# volumes:
+#   # Postgres Data
+#   sandbox-postgres-data:
+#     driver: local
+
+#   # MySQL Data
+#   sandbox-mysql-data:
+#     driver: local
+
+#   # Redis Data
+#   sandbox-redis-data:
+#     driver: local
+
+services:
+  php-fpm:
+    build:
+      context: ./php-fpm
+    volumes:
+      - ../src:/var/www
+
+  nginx:
+    build:
+      context: ./webserver/nginx
+    volumes:
+      # Change for You Source File Project
+      - ../src:/var/www
+      - ./webserver/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./webserver/nginx/sites/:/etc/nginx/sites-available
+      - ./webserver/nginx/conf.d/:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+    ports:
+      - "8000:80"
+      - "443:443"
+
+  # Datasase Service Configs
+  # For You Local specification with Dockerfile
+  database:
+    build:
+      context: ./database
+    environment:
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=docker
+    volumes:
+      - ./database/data.sql:/docker-entrypoint-initdb.d/data.sql
+
+  # # Vendor Official specification | Using Volumes Definition
+  # # Uncomment this section for activate this
+  # # Postgres (10.3)
+  # postgres:
+  #   image: postgres:10.3
+  #   container_name: sandbox-postgres
+  #   volumes:
+  #     - sandbox-postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_PASSWORD=sandbox
+  #     - POSTGRES_DB=sandbox
+  #     - POSTGRES_USER=sandbox
+
+  # # MySQL (5.7)
+  # mysql:
+  #   image: mysql:5.7
+  #   container_name: sandbox-mysql
+  #   volumes:
+  #     - sandbox-mysql-data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=sandbox
+  #     - MYSQL_DATABASE=sandbox
+  #     - MYSQL_USER=sandbox
+  #     - MYSQL_PASSWORD=sandbox
+
+  # # Redis
+  # cache:
+  #   image: redis:4.0
+  #   container_name: sandbox-redis
+  #   command: --appendonly yes
+  #   volumes:
+  #     - sandbox-redis-data:/data
+  #   ports:
+  #     - "6379:6379"
+  

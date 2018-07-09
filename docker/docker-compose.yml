@@ -46,6 +46,7 @@ services:
   # Datasase Service Configs
   # For You Local specification with Dockerfile
   database:
+    # container_name: 
     build:
       context: ./database
     environment:
